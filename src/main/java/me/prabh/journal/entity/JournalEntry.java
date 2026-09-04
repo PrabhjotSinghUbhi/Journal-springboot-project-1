@@ -1,9 +1,10 @@
 package me.prabh.journal.entity;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 //POJO class for JournalEntry
 @Document(collection = "journal_entries")
@@ -14,15 +15,16 @@ public class JournalEntry {
     private String title;
     private String content;
 
-    public Date getDate() {
-        return date;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    private Date date;
+    @CreatedDate
+    private LocalDateTime createdAt;
 
     public String getId() {
         return id;
