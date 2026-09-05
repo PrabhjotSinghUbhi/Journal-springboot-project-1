@@ -3,7 +3,6 @@ package me.prabh.journal.controllers;
 import me.prabh.journal.DTO.JournalUpdateDTO;
 import me.prabh.journal.entity.JournalEntry;
 import me.prabh.journal.service.JournalEntryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,8 +12,11 @@ import java.util.List;
 public class JournalEntryController {
 
     //get the service
-    @Autowired
-    JournalEntryService journalEntryService;
+    final JournalEntryService journalEntryService;
+
+    public JournalEntryController(JournalEntryService journalEntryService) {
+        this.journalEntryService = journalEntryService;
+    }
 
     //save entry
     @PostMapping
@@ -30,7 +32,7 @@ public class JournalEntryController {
 
     @GetMapping("/{id}")
     public JournalEntry getEntryById(@PathVariable String id) {
-        return journalEntryService.getEntryById(id).get();
+        return journalEntryService.getEntryById(id).orElse(null);
     }
 
     @GetMapping("/exists/{id}")
@@ -50,7 +52,7 @@ public class JournalEntryController {
 
     @DeleteMapping("/{id}")
     public boolean deleteEntryById(@PathVariable String id) {
-        return journalEntryService.deleteAllEntries();
+        return journalEntryService.deleteEntryById(id);
     }
 
     @PatchMapping("/{id}")
