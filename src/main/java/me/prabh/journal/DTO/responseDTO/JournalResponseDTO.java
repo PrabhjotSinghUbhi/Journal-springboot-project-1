@@ -9,14 +9,16 @@ public record JournalResponseDTO(
         String id,
         String title,
         String content,
-        LocalDateTime createdAt
-) {
+        LocalDateTime createdAt,
+
+        LocalDateTime updatedAt) {
     public static JournalResponseDTO fromEntity(JournalEntry entry) {
         return new JournalResponseDTO(
                 entry.getId(),
                 entry.getTitle(),
                 entry.getContent(),
-                entry.getCreatedAt()
+                entry.getCreatedAt(),
+                entry.getUpdatedAt()
         );
     }
 }

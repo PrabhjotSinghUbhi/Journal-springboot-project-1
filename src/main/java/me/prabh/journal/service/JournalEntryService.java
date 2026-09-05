@@ -5,8 +5,10 @@ import me.prabh.journal.DTO.creationDTO.JournalCreateDTO;
 import me.prabh.journal.DTO.responseDTO.JournalResponseDTO;
 import me.prabh.journal.DTO.updationDTO.JournalUpdateDTO;
 import me.prabh.journal.entity.JournalEntry;
+import me.prabh.journal.entity.User;
 import me.prabh.journal.exceptions.ResourceNotFoundException;
 import me.prabh.journal.repository.JournalEntryRepository;
+import me.prabh.journal.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,9 +18,10 @@ import java.util.List;
 public class JournalEntryService {
 
     private final JournalEntryRepository journalEntryRepository;
+    private final UserRepository userRepository;
 
     //save Entry
-    public JournalResponseDTO saveEntry(JournalCreateDTO entry) {
+    public JournalResponseDTO saveEntry(JournalCreateDTO entry, String username) {
         //create entity.
         JournalEntry journalEntry = new JournalEntry();
 
@@ -28,6 +31,13 @@ public class JournalEntryService {
 
         //save the response.
         JournalEntry savedEntry = journalEntryRepository.save(journalEntry);
+
+        //add entry to the owner.
+        User user = userRepository.findByUsername(username);
+
+        if(user == null) throw new ResourceNotFoundException("User not found");
+        user.getJournalEntries().add(savedEntry);
+        userRepository.save(user);
 
         //send the response.
         return JournalResponseDTO.fromEntity(savedEntry);
@@ -62,18 +72,33 @@ public class JournalEntryService {
     }
 
     //delete all entries
+    @Deprecated
     public boolean deleteAllEntries() {
-        journalEntryRepository.deleteAll();
+//        journalEntryRepository.deleteAll();
         return true;
     }
 
     //delete entries by id
-    public boolean deleteEntryById(String id) {
+    public boolean deleteEntryById(String id, String username) {
         if(!journalEntryRepository.existsById(id)) {
             throw new ResourceNotFoundException("Not Such entry exists");
         }
+
+        User user = userRepository.findByUsername(username);
+        if(user == null) throw new ResourceNotFoundException("User does not exists");
+
+        user.getJournalEntries().removeIf(x -> x.getId().equals(id));
+        userRepository.save(user);
+
         journalEntryRepository.deleteById(id);
         return true;
+    }
+
+    public List<JournalResponseDTO> getAllEntriesOfUser(String username){
+        User user = userRepository.findByUsername(username);
+        if(user == null) throw new ResourceNotFoundException("User not found");
+
+        return user.getJournalEntries().stream().map(JournalResponseDTO::fromEntity).toList();
     }
 
     //edit title

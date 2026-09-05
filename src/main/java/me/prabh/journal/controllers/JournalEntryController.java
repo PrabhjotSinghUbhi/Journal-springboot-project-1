@@ -23,9 +23,9 @@ public class JournalEntryController {
     }
 
     //save entry
-    @PostMapping
-    public ResponseEntity<JournalResponseDTO> postEntry(@Valid @RequestBody JournalCreateDTO entry) {
-        JournalResponseDTO res = journalEntryService.saveEntry(entry);
+    @PostMapping("/{username}")
+    public ResponseEntity<JournalResponseDTO> postEntry(@PathVariable String username ,@Valid @RequestBody JournalCreateDTO entry) {
+        JournalResponseDTO res = journalEntryService.saveEntry(entry, username);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(res);
@@ -35,6 +35,13 @@ public class JournalEntryController {
     @GetMapping
     public ResponseEntity<List<JournalResponseDTO>> getAllEntries() {
         List<JournalResponseDTO> res = journalEntryService.getAllEntries();
+        return ResponseEntity
+                .ok(res);
+    }
+
+    @GetMapping("/user/{username}")
+    public ResponseEntity<List<JournalResponseDTO>> getAllEntriesOfUser(@PathVariable String username) {
+        List<JournalResponseDTO> res = journalEntryService.getAllEntriesOfUser(username);
         return ResponseEntity
                 .ok(res);
     }
@@ -69,9 +76,9 @@ public class JournalEntryController {
         return journalEntryService.deleteAllEntries();
     }
 
-    @DeleteMapping("/{id}")
-    public boolean deleteEntryById(@PathVariable String id) {
-        return journalEntryService.deleteEntryById(id);
+    @DeleteMapping("/{id}/{username}")
+    public boolean deleteEntryById(@PathVariable String id, @PathVariable String username) {
+        return journalEntryService.deleteEntryById(id,username);
     }
 
     @PatchMapping("/{id}")
