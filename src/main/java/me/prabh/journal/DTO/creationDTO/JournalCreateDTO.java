@@ -1,4 +1,4 @@
-package me.prabh.journal.DTO;
+package me.prabh.journal.DTO.creationDTO;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

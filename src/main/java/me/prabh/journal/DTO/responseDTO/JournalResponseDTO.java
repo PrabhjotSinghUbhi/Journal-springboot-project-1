@@ -1,4 +1,4 @@
-package me.prabh.journal.DTO;
+package me.prabh.journal.DTO.responseDTO;
 
 import me.prabh.journal.entity.JournalEntry;
 

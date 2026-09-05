@@ -1,9 +1,9 @@
 package me.prabh.journal.controllers;
 
 import jakarta.validation.Valid;
-import me.prabh.journal.DTO.JournalCreateDTO;
-import me.prabh.journal.DTO.JournalResponseDTO;
-import me.prabh.journal.DTO.JournalUpdateDTO;
+import me.prabh.journal.DTO.creationDTO.JournalCreateDTO;
+import me.prabh.journal.DTO.responseDTO.JournalResponseDTO;
+import me.prabh.journal.DTO.updationDTO.JournalUpdateDTO;
 import me.prabh.journal.service.JournalEntryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,7 +76,7 @@ public class JournalEntryController {
 
     @PatchMapping("/{id}")
     public JournalResponseDTO updateEntry(@PathVariable String id, @RequestBody JournalUpdateDTO dto) {
-        return journalEntryService.editEntry(id, dto.getTitle(), dto.getContent());
+        return journalEntryService.editEntry(id, dto);
     }
 
 

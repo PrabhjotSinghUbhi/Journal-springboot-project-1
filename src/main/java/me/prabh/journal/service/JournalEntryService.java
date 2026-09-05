@@ -1,23 +1,21 @@
 package me.prabh.journal.service;
 
-import me.prabh.journal.DTO.JournalCreateDTO;
-import me.prabh.journal.DTO.JournalResponseDTO;
+import lombok.RequiredArgsConstructor;
+import me.prabh.journal.DTO.creationDTO.JournalCreateDTO;
+import me.prabh.journal.DTO.responseDTO.JournalResponseDTO;
+import me.prabh.journal.DTO.updationDTO.JournalUpdateDTO;
 import me.prabh.journal.entity.JournalEntry;
 import me.prabh.journal.exceptions.ResourceNotFoundException;
 import me.prabh.journal.repository.JournalEntryRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class JournalEntryService {
 
     private final JournalEntryRepository journalEntryRepository;
-
-    public JournalEntryService(JournalEntryRepository journalEntryRepository) {
-        this.journalEntryRepository = journalEntryRepository;
-    }
 
     //save Entry
     public JournalResponseDTO saveEntry(JournalCreateDTO entry) {
@@ -71,30 +69,26 @@ public class JournalEntryService {
 
     //delete entries by id
     public boolean deleteEntryById(String id) {
+        if(!journalEntryRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Not Such entry exists");
+        }
         journalEntryRepository.deleteById(id);
         return true;
     }
 
     //edit title
-    public JournalResponseDTO editEntry(String id, String newTitle, String newContent) {
-        try {
-            //find by id
-            Optional<JournalEntry> entryToBeUpdated = journalEntryRepository.findById(id);
+    public JournalResponseDTO editEntry(String id, JournalUpdateDTO updateDTO) {
 
-            entryToBeUpdated.ifPresent(entry -> {
-                //update the title.
-                entry.setTitle(newTitle);
-                entry.setContent(newContent);
-                journalEntryRepository.save(entry);
-            });
+        //find by id
+        JournalEntry entry = journalEntryRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("The entry to be updated does not exists"));
 
-            return entryToBeUpdated
-                    .map(JournalResponseDTO::fromEntity)
-                    .orElseThrow(RuntimeException::new);
+        entry.setTitle(updateDTO.title());
+        entry.setContent(updateDTO.content());
+        JournalEntry updatedEntry = journalEntryRepository.save(entry);
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return JournalResponseDTO.fromEntity(updatedEntry);
     }
 
 
