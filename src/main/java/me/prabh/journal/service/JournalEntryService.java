@@ -91,7 +91,7 @@ public class JournalEntryService {
                 entry.setContent(newContent);
                 journalEntryRepository.save(entry);
             });
-            return entryToBeUpdated.get();
+            return entryToBeUpdated.orElse(null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
