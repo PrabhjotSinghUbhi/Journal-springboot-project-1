@@ -1,8 +1,12 @@
 package me.prabh.journal.controllers;
 
+import jakarta.validation.Valid;
+import me.prabh.journal.DTO.JournalCreateDTO;
+import me.prabh.journal.DTO.JournalResponseDTO;
 import me.prabh.journal.DTO.JournalUpdateDTO;
-import me.prabh.journal.entity.JournalEntry;
 import me.prabh.journal.service.JournalEntryService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,33 +24,48 @@ public class JournalEntryController {
 
     //save entry
     @PostMapping
-    public JournalEntry postEntry(@RequestBody JournalEntry entry) {
-        return journalEntryService.saveEntry(entry);
+    public ResponseEntity<JournalResponseDTO> postEntry(@Valid @RequestBody JournalCreateDTO entry) {
+        JournalResponseDTO res = journalEntryService.saveEntry(entry);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(res);
     }
 
     //get all entries
     @GetMapping
-    public List<JournalEntry> getAllEntries() {
-        return journalEntryService.getAllEntries();
+    public ResponseEntity<List<JournalResponseDTO>> getAllEntries() {
+        List<JournalResponseDTO> res = journalEntryService.getAllEntries();
+        return ResponseEntity
+                .ok(res);
     }
 
     @GetMapping("/{id}")
-    public JournalEntry getEntryById(@PathVariable String id) {
-        return journalEntryService.getEntryById(id).orElse(null);
+    public ResponseEntity<JournalResponseDTO> getEntryById(@PathVariable String id) {
+        JournalResponseDTO res = journalEntryService.getEntryById(id);
+        if (res != null) {
+            return ResponseEntity.ok(res);
+        }
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(null);
     }
 
     @GetMapping("/exists/{id}")
-    public boolean entryExists(@PathVariable String id) {
-        return journalEntryService.entryExists(id);
+    public ResponseEntity<?> entryExists(@PathVariable String id) {
+        boolean res = journalEntryService.entryExists(id);
+        if (res) {
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
     }
 
     @GetMapping("/count")
-    public long countEntries(){
+    public long countEntries() {
         return journalEntryService.countEntries();
     }
 
     @DeleteMapping
-    public boolean deleteAllEntries(){
+    public boolean deleteAllEntries() {
         return journalEntryService.deleteAllEntries();
     }
 
@@ -56,7 +75,7 @@ public class JournalEntryController {
     }
 
     @PatchMapping("/{id}")
-    public JournalEntry udpateEntry(@PathVariable String id, @RequestBody JournalUpdateDTO dto) {
+    public JournalResponseDTO updateEntry(@PathVariable String id, @RequestBody JournalUpdateDTO dto) {
         return journalEntryService.editEntry(id, dto.getTitle(), dto.getContent());
     }
 

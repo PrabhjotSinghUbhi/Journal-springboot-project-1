@@ -1,5 +1,9 @@
 package me.prabh.journal.service;
+
+import me.prabh.journal.DTO.JournalCreateDTO;
+import me.prabh.journal.DTO.JournalResponseDTO;
 import me.prabh.journal.entity.JournalEntry;
+import me.prabh.journal.exceptions.ResourceNotFoundException;
 import me.prabh.journal.repository.JournalEntryRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,82 +20,78 @@ public class JournalEntryService {
     }
 
     //save Entry
-    public JournalEntry saveEntry(JournalEntry entry){
-        try{
-            return journalEntryRepository.save(entry);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public JournalResponseDTO saveEntry(JournalCreateDTO entry) {
+        //create entity.
+        JournalEntry journalEntry = new JournalEntry();
+
+        //set the values.
+        journalEntry.setTitle(entry.title());
+        journalEntry.setContent(entry.content());
+
+        //save the response.
+        JournalEntry savedEntry = journalEntryRepository.save(journalEntry);
+
+        //send the response.
+        return JournalResponseDTO.fromEntity(savedEntry);
     }
 
     //get all entries
-    public List<JournalEntry> getAllEntries(){
-        try{
-            return journalEntryRepository.findAll();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public List<JournalResponseDTO> getAllEntries() {
+        List<JournalEntry> allEntries = journalEntryRepository.findAll();
+
+        return allEntries
+                .stream()
+                .map(JournalResponseDTO::fromEntity)
+                .toList();
     }
 
     //get entries by id
-    public Optional<JournalEntry> getEntryById(String id){
-        try{
-            return journalEntryRepository.findById(id);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public JournalResponseDTO getEntryById(String id) {
+        return journalEntryRepository
+                .findById(id)
+                .map(JournalResponseDTO::fromEntity)
+                .orElseThrow(() -> new ResourceNotFoundException("Not such entry exists."));
     }
 
     //check if the journal exists.
-    public boolean entryExists(String id){
-        try{
-            return journalEntryRepository.existsById(id);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public boolean entryExists(String id) {
+        return journalEntryRepository.existsById(id);
     }
 
     //count the number of entries
-    public long countEntries(){
-        try{
-            return journalEntryRepository.count();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public long countEntries() {
+        return journalEntryRepository.count();
     }
 
     //delete all entries
     public boolean deleteAllEntries() {
-        try {
-            journalEntryRepository.deleteAll();
-            return true;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        journalEntryRepository.deleteAll();
+        return true;
     }
 
     //delete entries by id
     public boolean deleteEntryById(String id) {
-        try {
-            journalEntryRepository.deleteById(id);
-            return true;
-        }catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        journalEntryRepository.deleteById(id);
+        return true;
     }
 
     //edit title
-    public JournalEntry editEntry(String id, String newTitle, String newContent) {
-        try{
+    public JournalResponseDTO editEntry(String id, String newTitle, String newContent) {
+        try {
             //find by id
             Optional<JournalEntry> entryToBeUpdated = journalEntryRepository.findById(id);
+
             entryToBeUpdated.ifPresent(entry -> {
                 //update the title.
                 entry.setTitle(newTitle);
                 entry.setContent(newContent);
                 journalEntryRepository.save(entry);
             });
-            return entryToBeUpdated.orElse(null);
+
+            return entryToBeUpdated
+                    .map(JournalResponseDTO::fromEntity)
+                    .orElseThrow(RuntimeException::new);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
