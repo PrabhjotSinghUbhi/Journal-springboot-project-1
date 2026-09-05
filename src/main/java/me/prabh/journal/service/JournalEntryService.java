@@ -71,13 +71,6 @@ public class JournalEntryService {
         return journalEntryRepository.count();
     }
 
-    //delete all entries
-    @Deprecated
-    public boolean deleteAllEntries() {
-//        journalEntryRepository.deleteAll();
-        return true;
-    }
-
     //delete entries by id
     public boolean deleteEntryById(String id, String username) {
         if(!journalEntryRepository.existsById(id)) {

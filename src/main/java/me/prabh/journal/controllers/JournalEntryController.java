@@ -71,11 +71,6 @@ public class JournalEntryController {
         return journalEntryService.countEntries();
     }
 
-    @DeleteMapping
-    public boolean deleteAllEntries() {
-        return journalEntryService.deleteAllEntries();
-    }
-
     @DeleteMapping("/{id}/{username}")
     public boolean deleteEntryById(@PathVariable String id, @PathVariable String username) {
         return journalEntryService.deleteEntryById(id,username);
