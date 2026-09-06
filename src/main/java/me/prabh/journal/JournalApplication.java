@@ -11,8 +11,11 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 @EnableMongoAuditing
 public class JournalApplication {
 
-	@Autowired
-	private MongoTemplate mongoTemplate;
+	private final MongoTemplate mongoTemplate;
+
+	public JournalApplication(MongoTemplate mongoTemplate) {
+		this.mongoTemplate = mongoTemplate;
+	}
 
 	@PostConstruct
 	public void checkDb() {

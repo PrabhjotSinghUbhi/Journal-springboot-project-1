@@ -23,6 +23,9 @@ public class JournalEntryService {
     //save Entry
     public JournalResponseDTO saveEntry(JournalCreateDTO entry, String username) {
         //create entity.
+        User user = userRepository.findByUsername(username);
+        if(user == null) throw new ResourceNotFoundException("User not found");
+
         JournalEntry journalEntry = new JournalEntry();
 
         //set the values.
@@ -32,10 +35,6 @@ public class JournalEntryService {
         //save the response.
         JournalEntry savedEntry = journalEntryRepository.save(journalEntry);
 
-        //add entry to the owner.
-        User user = userRepository.findByUsername(username);
-
-        if(user == null) throw new ResourceNotFoundException("User not found");
         user.getJournalEntries().add(savedEntry);
         userRepository.save(user);
 
