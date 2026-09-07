@@ -10,6 +10,7 @@ import me.prabh.journal.exceptions.ResourceNotFoundException;
 import me.prabh.journal.repository.JournalEntryRepository;
 import me.prabh.journal.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class JournalEntryService {
     private final UserRepository userRepository;
 
     //save Entry
+    @Transactional
     public JournalResponseDTO saveEntry(JournalCreateDTO entry, String username) {
         //create entity.
         User user = userRepository.findByUsername(username);
