@@ -38,6 +38,8 @@ public class User {
     @DBRef
     List<JournalEntry> journalEntries = new ArrayList<>();
 
+    List<String> roles;
+
     @CreatedDate
     LocalDateTime createdAt;
 

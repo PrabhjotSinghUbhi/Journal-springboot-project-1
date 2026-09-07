@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 public record UserCreateDTO(
 
         @Size(min = 8, message = "Username should be of at least 8 characters")
@@ -18,7 +20,9 @@ public record UserCreateDTO(
 
         @NotBlank(message = "Email is required.")
         @Email(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "Email is not valid.")
-        String email
+        String email,
+
+        List<String> roles
 ) {
 
 }

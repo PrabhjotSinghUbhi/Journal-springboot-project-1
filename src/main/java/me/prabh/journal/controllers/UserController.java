@@ -27,6 +27,7 @@ public class UserController {
     }
 
     //get all users
+    //TODO: make it admin level
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         return ResponseEntity.ok(
@@ -35,20 +36,21 @@ public class UserController {
     }
 
     //get user by id
+    //TODO: make it Admin Level
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable String id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
     //update user.
-    @PatchMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable String id, @RequestBody UserUpdateDTO updateDTO){
-        return ResponseEntity.ok(userService.updateUser(id,updateDTO));
+    @PatchMapping
+    public ResponseEntity<UserResponseDTO> updateUser(@RequestBody UserUpdateDTO updateDTO){
+        return ResponseEntity.ok(userService.updateUser(updateDTO));
     }
 
     //delete user by id.
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> deleteUserById(@PathVariable String id){
-        return ResponseEntity.ok(userService.deleteUserById(id));
+    @DeleteMapping
+    public ResponseEntity<Boolean> deleteUserById(){
+        return ResponseEntity.ok(userService.deleteUserById());
     }
 }

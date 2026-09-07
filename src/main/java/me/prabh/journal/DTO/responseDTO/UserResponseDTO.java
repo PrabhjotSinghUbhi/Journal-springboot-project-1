@@ -13,7 +13,8 @@ public record UserResponseDTO(
         List<JournalEntry> journalEntries,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        String email) {
+        String email,
+        List<String> roles) {
     public static UserResponseDTO fromEntity(User user) {
         return new UserResponseDTO(
                 user.getId(),
@@ -22,7 +23,8 @@ public record UserResponseDTO(
                 user.getJournalEntries(),
                 user.getCreatedAt(),
                 user.getUpdatedAt(),
-                user.getEmail()
+                user.getEmail(),
+                user.getRoles()
         );
     }
 }
