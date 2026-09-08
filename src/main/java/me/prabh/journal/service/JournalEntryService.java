@@ -6,9 +6,12 @@ import me.prabh.journal.DTO.responseDTO.JournalResponseDTO;
 import me.prabh.journal.DTO.updationDTO.JournalUpdateDTO;
 import me.prabh.journal.entity.JournalEntry;
 import me.prabh.journal.entity.User;
+import me.prabh.journal.exceptions.AccessDeniedException;
 import me.prabh.journal.exceptions.ResourceNotFoundException;
 import me.prabh.journal.repository.JournalEntryRepository;
 import me.prabh.journal.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,10 +26,15 @@ public class JournalEntryService {
 
     //save Entry
     @Transactional
-    public JournalResponseDTO saveEntry(JournalCreateDTO entry, String username) {
+    public JournalResponseDTO saveEntry(JournalCreateDTO entry) {
         //create entity.
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        assert authentication != null;
+        String username = authentication.getName();
+
         User user = userRepository.findByUsername(username);
-        if(user == null) throw new ResourceNotFoundException("User not found");
+        if (user == null) throw new ResourceNotFoundException("User not found");
 
         JournalEntry journalEntry = new JournalEntry();
 
@@ -56,6 +64,22 @@ public class JournalEntryService {
 
     //get entries by id
     public JournalResponseDTO getEntryById(String id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("User is not authenticated"); // Or a custom exception
+        }
+
+        String username = authentication.getName();
+
+        User user = userRepository.findByUsername(username);
+
+        boolean containsEntryInUserEntries = user.getJournalEntries().stream().anyMatch(x -> x.getId().equals(id));
+
+        if (!containsEntryInUserEntries) {
+            throw new ResourceNotFoundException("Not such entry exists in users journal entries.");
+        }
+
         return journalEntryRepository
                 .findById(id)
                 .map(JournalResponseDTO::fromEntity)
@@ -73,13 +97,28 @@ public class JournalEntryService {
     }
 
     //delete entries by id
-    public boolean deleteEntryById(String id, String username) {
-        if(!journalEntryRepository.existsById(id)) {
+    public boolean deleteEntryById(String id) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("User is not authenticated"); // Or a custom exception
+        }
+
+        String username = authentication.getName();
+
+        if (!journalEntryRepository.existsById(id)) {
             throw new ResourceNotFoundException("Not Such entry exists");
         }
 
         User user = userRepository.findByUsername(username);
-        if(user == null) throw new ResourceNotFoundException("User does not exists");
+        if (user == null) throw new ResourceNotFoundException("User does not exists");
+
+        boolean containsEntryInUserEntries = user.getJournalEntries().stream().anyMatch(x -> x.getId().equals(id));
+
+        if (!containsEntryInUserEntries) {
+            throw new ResourceNotFoundException("Not such entry exists in users journal entries.");
+        }
 
         user.getJournalEntries().removeIf(x -> x.getId().equals(id));
         userRepository.save(user);
@@ -88,14 +127,24 @@ public class JournalEntryService {
         return true;
     }
 
-    public List<JournalResponseDTO> getAllEntriesOfUser(String username){
+    public List<JournalResponseDTO> getAllEntriesOfUser() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("User is not authenticated"); // Or a custom exception
+        }
+
+        String username = authentication.getName();
+
         User user = userRepository.findByUsername(username);
-        if(user == null) throw new ResourceNotFoundException("User not found");
+
+        if (user == null) throw new ResourceNotFoundException("User not found");
 
         return user.getJournalEntries().stream().map(JournalResponseDTO::fromEntity).toList();
     }
 
-    //edit title
+    //edit title and content.
     public JournalResponseDTO editEntry(String id, JournalUpdateDTO updateDTO) {
 
         //find by id

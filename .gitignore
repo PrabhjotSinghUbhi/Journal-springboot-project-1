@@ -31,5 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
-.idea
 /src/main/resources/application.properties
+/api-tests/http-client.private.env.json

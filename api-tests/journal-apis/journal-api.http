@@ -1,0 +1,34 @@
+### GET request to Journal Entries of the user.
+GET http://localhost:8080/journal
+Authorization: Basic {{username}} {{password}}
+
+### GET request to get journal entries by id;
+@id = 6aa04b8d3b5f15725e79046a
+GET http://localhost:8080/journal/{{id}}
+Authorization: Basic {{username}} {{password}}
+
+
+### POST add entry.
+POST http://localhost:8080/journal
+Content-Type: application/json
+Authorization: Basic {{username}} {{password}}
+
+{
+  "title": "I Love DSA",
+  "content": "Striver is the GOD of DSA."
+}
+
+### GET request to get journal entries by id;
+PATCH http://localhost:8080/journal/{{id}}
+Content-Type: application/json
+Authorization: Basic {{username}} {{password}}
+
+{
+  "title": "I Love DSA",
+  "content": "Striver is the GOD of DSA."
+}
+
+
+### Delete request to delete journal entries by id;
+DELETE http://localhost:8080/journal/{{id}}
+Authorization: Basic {{username}} {{password}}

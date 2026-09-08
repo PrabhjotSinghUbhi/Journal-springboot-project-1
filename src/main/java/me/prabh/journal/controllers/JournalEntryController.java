@@ -23,27 +23,24 @@ public class JournalEntryController {
     }
 
     //save entry
-    @PostMapping("/{username}")
-    public ResponseEntity<JournalResponseDTO> postEntry(@PathVariable String username ,@Valid @RequestBody JournalCreateDTO entry) {
-        JournalResponseDTO res = journalEntryService.saveEntry(entry, username);
+    @PostMapping
+    public ResponseEntity<JournalResponseDTO> postEntry(@Valid @RequestBody JournalCreateDTO entry) {
+        JournalResponseDTO res = journalEntryService.saveEntry(entry);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(res);
     }
 
-    //get all entries
     @GetMapping
-    public ResponseEntity<List<JournalResponseDTO>> getAllEntries() {
-        List<JournalResponseDTO> res = journalEntryService.getAllEntries();
+    public ResponseEntity<List<JournalResponseDTO>> getAllEntriesOfUser() {
+        List<JournalResponseDTO> res = journalEntryService.getAllEntriesOfUser();
         return ResponseEntity
                 .ok(res);
     }
 
-    @GetMapping("/user/{username}")
-    public ResponseEntity<List<JournalResponseDTO>> getAllEntriesOfUser(@PathVariable String username) {
-        List<JournalResponseDTO> res = journalEntryService.getAllEntriesOfUser(username);
-        return ResponseEntity
-                .ok(res);
+    @DeleteMapping("/{id}")
+    public boolean deleteEntryById(@PathVariable String id) {
+        return journalEntryService.deleteEntryById(id);
     }
 
     @GetMapping("/{id}")
@@ -57,27 +54,8 @@ public class JournalEntryController {
                 .body(null);
     }
 
-    @GetMapping("/exists/{id}")
-    public ResponseEntity<?> entryExists(@PathVariable String id) {
-        boolean res = journalEntryService.entryExists(id);
-        if (res) {
-            return ResponseEntity.ok(true);
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
-    }
-
-    @GetMapping("/count")
-    public long countEntries() {
-        return journalEntryService.countEntries();
-    }
-
-    @DeleteMapping("/{id}/{username}")
-    public boolean deleteEntryById(@PathVariable String id, @PathVariable String username) {
-        return journalEntryService.deleteEntryById(id,username);
-    }
-
     @PatchMapping("/{id}")
-    public JournalResponseDTO updateEntry(@PathVariable String id, @RequestBody JournalUpdateDTO dto) {
+    public JournalResponseDTO updateEntry(@PathVariable String id,@Valid @RequestBody JournalUpdateDTO dto) {
         return journalEntryService.editEntry(id, dto);
     }
 

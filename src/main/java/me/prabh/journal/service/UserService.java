@@ -47,14 +47,6 @@ public class UserService {
                 .toList();
     }
 
-    //get user by id
-    public UserResponseDTO getUserById(String id) {
-        return userRepository
-                .findById(id)
-                .map(UserResponseDTO::fromEntity)
-                .orElseThrow(() -> new ResourceNotFoundException("User now found."));
-    }
-
     //update user
     public UserResponseDTO updateUser(UserUpdateDTO updateDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

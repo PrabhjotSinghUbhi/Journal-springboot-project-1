@@ -26,23 +26,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
-    //get all users
-    //TODO: make it admin level
-    @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
-        return ResponseEntity.ok(
-                userService.getAllUsers()
-        );
-    }
-
-    //get user by id
-    //TODO: make it Admin Level
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable String id) {
-        return ResponseEntity.ok(userService.getUserById(id));
-    }
-
-    //update user.
     @PatchMapping
     public ResponseEntity<UserResponseDTO> updateUser(@RequestBody UserUpdateDTO updateDTO){
         return ResponseEntity.ok(userService.updateUser(updateDTO));

@@ -1,0 +1,17 @@
+
+### Get all journal entries
+GET http://localhost:8080/admin/journals
+Authorization: Basic {{username}} {{password}}
+
+### Get journal entry by id.
+@id =6aa04b8d3b5f15725e79046a
+GET http://localhost:8080/admin/journal/{{id}}
+Authorization: Basic {{username}} {{password}}
+
+### Get journal entries count.
+GET http://localhost:8080/admin/count
+Authorization: Basic {{username}} {{password}}
+
+### GET if entry exists
+GET http://localhost:8080/admin/exists/{{id}}
+Authorization: Basic {{username}} {{password}}
