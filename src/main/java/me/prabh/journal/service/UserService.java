@@ -86,9 +86,6 @@ public class UserService {
         assert authentication != null;
         String username = authentication.getName();
 
-        var val = authentication.getCredentials();
-        System.out.println(val);
-
         User user = userRepository.findByUsername(username);
         if(user == null) throw new ResourceNotFoundException("User does not exists");
 
